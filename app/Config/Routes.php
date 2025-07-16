@@ -8,5 +8,6 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'Home::index');
 
 // Admin routes
+
 $routes->get('/dashboard', 'Admin::dashboard');
 $routes->get('/reclamos', 'Admin::reclamosList');
