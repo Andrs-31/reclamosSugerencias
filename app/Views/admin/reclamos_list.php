@@ -163,14 +163,14 @@
                     <span class="tag <?= $estadoClass ?>"><?= esc(ucfirst(str_replace('_', ' ', $reclamo['estado']))) ?></span>
                   </td>
                   <td><?= esc(date('d/m/Y H:i', strtotime($reclamo['fecha']))) ?></td>
-                  <td>
-                    <div class="buttons is-small">
-                      <a class="button is-small is-light" title="Responder" onclick="openReplyModal(<?= $reclamo['id'] ?>, '<?= $reclamo['estado'] ?>')">
-                        <span class="icon"><i class="fas fa-reply"></i></span>
-                        <span>Responder</span>
-                      </a>
-                    </div>
-                  </td>
+                 <td>
+                  <div class="buttons is-small">
+                    <a class="button is-small is-light" title="Ver detalles" onclick="openReclamoModal(<?= $reclamo['id'] ?>)">
+                      <span class="icon"><i class="fas fa-eye"></i></span>
+                      <span>Ver</span>
+                    </a>
+                  </div>
+                </td>
                 </tr>
               <?php endforeach; ?>
             <?php else: ?>
@@ -185,7 +185,8 @@
   </div>
 </section>
 
-<!-- Modal para Responder Reclamo -->
+<!-- Modal para Responder Reclamo 
+ 
 <div id="reply-modal" class="modal">
   <div class="modal-background"></div>
   <div class="modal-card">
@@ -221,7 +222,7 @@
       <button class="button is-light" onclick="closeModal()">Cancelar</button>
     </footer>
   </div>
-</div>
+</div> -->
 
 <script>
   // Mostrar/ocultar filtros
@@ -365,6 +366,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function updateStatusInTable(reclamoId, newStatus) {
+    // Buscar la fila correspondiente en la tabla
+    const rows = document.querySelectorAll('.table tbody tr');
+    
+    rows.forEach(row => {
+        const rowId = row.querySelector('td:first-child').textContent;
+        if (rowId === reclamoId.toString()) {
+            // Encontré la fila que necesito actualizar
+            const statusCell = row.querySelector('td:nth-child(5)'); // Ajusta este selector según tu estructura
+            
+            // Limpiar y actualizar el tag de estado
+            statusCell.innerHTML = '';
+            const tag = document.createElement('span');
+            tag.className = `tag ${getStatusClass(newStatus)}`;
+            tag.textContent = newStatus.replace('_', ' ');
+            statusCell.appendChild(tag);
+            
+            // También puedes actualizar otros datos si es necesario
+            const fechaActualizacion = row.querySelector('td:nth-child(6)'); // Ajusta según tu estructura
+            if (fechaActualizacion) {
+                fechaActualizacion.textContent = new Date().toLocaleString();
+            }
+        }
+    });
+    
+    // Actualizar contadores en el sidebar si existen
+    updateStatusCounters();
+}
 
 
   function openReplyModal(reclamoId, currentStatus) {

@@ -14,6 +14,7 @@ $routes->get('/dashboard', 'Admin::dashboard');
 $routes->get('/reclamos', 'Admin::reclamosList');
 $routes->get('/reclamos/(:segment)', 'Admin::reclamosList/$1');
 $routes->post('/reclamos/update', 'Admin::updateReclamo');
+$routes->get('admin/reclamos/contar', 'Admin::obtenerReclamoCounts');
 
 // Categorías
 $routes->get('/categorias', 'Admin::categoriasList');
@@ -27,4 +28,9 @@ $routes->post('/ciudadanos/save', 'Admin::saveCiudadano');
 $routes->group('api', function($routes) {
     $routes->get('distritos/(:segment)', 'UbicacionController::getDistritos/$1');
     $routes->get('corregimientos/(:segment)/(:segment)', 'UbicacionController::getCorregimientos/$1/$2');
+    
+    // Nuevas rutas para el modal
+    $routes->get('reclamos/(:num)', 'Admin::getReclamo/$1');
+    $routes->get('reclamos/(:num)/comentarios', 'Admin::getComentarios/$1');
+    $routes->post('reclamos/comentarios', 'Admin::agregarComentario');
 });

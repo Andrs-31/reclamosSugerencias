@@ -40,6 +40,10 @@ class Admin extends BaseController
             'reclamosSolucionados' => $this->reclamosModel->where('estado', 'solucionado')->countAllResults(),
         ];
     }
+    public function obtenerReclamoCounts()
+    {
+        return $this->response->setJSON($this->_getReclamoCounts());
+    }
 
     public function dashboard()
         {
@@ -132,11 +136,98 @@ class Admin extends BaseController
         return view('admin/reclamos_list', $data);
     }
 
-    // Métodos para Categorías
-    public function categoriasList()
-    {
-        $categorias = $this->categoriaModel->findAll();
-        $data = [
+    public function getReclamo($id) {
+    $reclamo = $this->reclamosModel
+        ->select('reclamos.*, 
+            usuarios.nombre_usuario,
+            categorias.nombre_categoria,
+            provincia.nombre_provincia,
+            distrito.nombre_distrito,
+            corregimiento.nombre_corregimiento,
+            CONCAT_WS(", ", provincia.nombre_provincia, distrito.nombre_distrito, corregimiento.nombre_corregimiento) as direccion_completa')
+        ->join('usuarios', 'usuarios.id = reclamos.usuario_id')
+        ->join('categorias', 'categorias.id = reclamos.categoria_id')
+        ->join('provincia', 'provincia.codigo_provincia = usuarios.provincia_id', 'left')
+        ->join('distrito', 'distrito.codigo_distrito = usuarios.distrito_id AND distrito.codigo_provincia = usuarios.provincia_id', 'left')
+        ->join('corregimiento', 'corregimiento.codigo_corregimiento = usuarios.corregimiento_id AND corregimiento.codigo_distrito = usuarios.distrito_id AND corregimiento.codigo_provincia = usuarios.provincia_id', 'left')
+        ->where('reclamos.id', $id)
+        ->first();
+        
+    if (!$reclamo) {
+        return $this->response->setStatusCode(404)->setJSON(['error' => 'Reclamo no encontrado']);
+    }
+    return $this->response->setJSON($reclamo);
+}
+
+public function getComentarios($reclamoId) {
+    $comentarios = $this->comentariosModel
+        ->select('comentarios.*, usuarios.nombre_usuario as autor')
+        ->join('usuarios', 'usuarios.id = comentarios.usuario_id')
+        ->where('comentarios.reclamo_id', $reclamoId)
+        ->orderBy('comentarios.fecha', 'ASC')
+        ->findAll();
+        
+    return $this->response->setJSON($comentarios);
+}
+public function agregarComentario()
+{
+    $reclamoModel = new \App\Models\ReclamoModel();
+    $comentarioModel = new \App\Models\ComentariosModel();
+    $userId = 1; // Usuario de prueba
+
+    try {
+        $input = $this->request->getJSON(true);
+        
+        // Validación básica
+        if (empty($input['reclamo_id']) || empty($input['comentario']) || empty($input['new_status'])) {
+            throw new \RuntimeException('Todos los campos son requeridos');
+        }
+
+        // Verificar si ya existe un comentario idéntico reciente
+        $existingComment = $comentarioModel
+            ->where('reclamo_id', $input['reclamo_id'])
+            ->where('usuario_id', $userId)
+            ->where('comentario', $input['comentario'])
+            ->orderBy('fecha', 'DESC')
+            ->first();
+
+        if ($existingComment && strtotime($existingComment['fecha']) > (time() - 60)) {
+            throw new \RuntimeException('Has enviado un comentario idéntico recientemente');
+        }
+
+        // Insertar comentario
+        $comentarioData = [
+            'reclamo_id' => $input['reclamo_id'],
+            'usuario_id' => $userId,
+            'comentario' => $input['comentario']
+        ];
+        
+        if (!$comentarioModel->insert($comentarioData)) {
+            throw new \RuntimeException('Error al insertar comentario');
+        }
+
+        // Actualizar estado del reclamo
+        $reclamoModel->update($input['reclamo_id'], [
+            'estado' => $input['new_status'],
+            'fecha_actualizacion' => date('Y-m-d H:i:s')
+        ]);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Comentario agregado exitosamente'
+        ]);
+
+    } catch (\Exception $e) {
+        return $this->response->setStatusCode(400)->setJSON([
+            'error' => $e->getMessage()
+        ]);
+    }
+}
+// Métodos para Categorías
+public function categoriasList()
+{
+    $categorias = $this->categoriaModel->findAll();
+    $data = [
             'titulo' => 'Gestión de Categorías',
             'categorias' => $categorias
         ];

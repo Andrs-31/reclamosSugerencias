@@ -4,6 +4,8 @@
   <figure class="image is-256x256 is-inline-block mb-1"> <!-- Añadido mb-1 al figure -->
     <img class="is-rounded" src="<?= base_url('img/logo.png') ?>" alt="Logo">
   </figure>
+  <h1 class="title is-4 has-text-white">Panel de Administración</h1>
+
   
 </div>
 
@@ -30,20 +32,30 @@
       <ul id="submenu-reclamos" class="is-hidden ml-4 mt-1">
         <li><a href="<?= base_url('reclamos') ?>" class="has-text-white">Todos los Reclamos</a></li>
         <li>
-          <a href="<?= base_url('reclamos/pendiente') ?>" class="has-text-white">
-            Pendientes <span class="tag is-warning is-light is-rounded is-size-7 ml-2"><?= esc($reclamosPendientes ?? 0) ?></span>
-          </a>
-        </li>
-        <li>
-          <a href="<?= base_url('reclamos/en_proceso') ?>" class="has-text-white">
-            En Proceso <span class="tag is-info is-light is-rounded is-size-7 ml-2"><?= esc($reclamosEnProceso ?? 0) ?></span>
-          </a>
-        </li>
-        <li>
-          <a href="<?= base_url('reclamos/solucionado') ?>" class="has-text-white">
-            Solucionados <span class="tag is-success is-light is-rounded is-size-7 ml-2"><?= esc($reclamosSolucionados ?? 0) ?></span>
-          </a>
-        </li>
+  <a href="<?= base_url('reclamos/pendiente') ?>" class="has-text-white">
+    Pendientes 
+    <span id="count-pendientes" class="tag is-warning is-rounded is-size-7 ml-2 has-text-weight-bold">
+      <?= esc($reclamosPendientes ?? 0) ?>
+    </span>
+  </a>
+</li>
+<li>
+  <a href="<?= base_url('reclamos/en_proceso') ?>" class="has-text-white">
+    En Proceso 
+    <span id="count-enproceso" class="tag is-info is-rounded is-size-7 ml-2 has-text-weight-bold">
+      <?= esc($reclamosEnProceso ?? 0) ?>
+    </span>
+  </a>
+</li>
+<li>
+  <a href="<?= base_url('reclamos/solucionado') ?>" class="has-text-white">
+    Solucionados 
+    <span id="count-solucionados" class="tag is-success is-rounded is-size-7 ml-2 has-text-weight-bold">
+      <?= esc($reclamosSolucionados ?? 0) ?>
+    </span>
+  </a>
+</li>
+
       </ul>
     </li>
 

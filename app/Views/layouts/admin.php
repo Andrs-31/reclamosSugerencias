@@ -90,11 +90,11 @@
       'reclamosEnProceso' => $reclamosEnProceso ?? 0,
       'reclamosSolucionados' => $reclamosSolucionados ?? 0,
   ]) ?>
-
-  <div class="main-content">
+ <div class="main-content">
     <?= $this->renderSection('contenido') ?>
   </div>
 
+  <?= $this->include('admin/reclamo_modal') ?>
 
   <button class="button is-primary is-fixed" id="mobile-menu-toggle" style="display: none; position: fixed; top: 1rem; left: 1rem; z-index: 1001;">
     <span class="icon">
@@ -104,6 +104,37 @@
 
   <script>
 
+  // Función que actualiza los contadores desde el backend
+  function actualizarContadoresReclamos() {
+    fetch('<?= base_url('admin/reclamos/contar') ?>')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('count-pendientes').textContent = data.reclamosPendientes;
+        document.getElementById('count-enproceso').textContent = data.reclamosEnProceso;
+        document.getElementById('count-solucionados').textContent = data.reclamosSolucionados;
+      })
+      .catch(error => console.error('Error al actualizar contadores:', error));
+  }
+
+  // Detecta cierre del modal de reclamo
+  const modal = document.getElementById('reclamo-modal'); // Asegúrate que este sea el ID correcto del modal
+
+  if (modal) {
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.attributeName === "class") {
+          const isActive = modal.classList.contains('is-active');
+          if (!isActive) {
+            actualizarContadoresReclamos(); // Se actualizan al cerrar
+          }
+        }
+      }
+    });
+
+    observer.observe(modal, { attributes: true });
+  }
+
+    // Manejo del menú móvil
     const mobileToggle = document.getElementById('mobile-menu-toggle');
     const sidebar = document.querySelector('.sidebar-fixed');
     
@@ -115,7 +146,6 @@
       sidebar.classList.toggle('is-active');
     });
     
-
     document.addEventListener('click', (e) => {
       if (window.innerWidth <= 768 && 
           !sidebar.contains(e.target) && 
@@ -133,13 +163,14 @@
       }
     });
 
+    // Función para los submenús desplegables
     function toggleMenu(id) {
-    const submenu = document.getElementById(id);
-    const arrow = document.getElementById("arrow-" + id);
-    submenu.classList.toggle("is-hidden");
-    arrow.classList.toggle("fa-chevron-down");
-    arrow.classList.toggle("fa-chevron-up");
-  }
+      const submenu = document.getElementById(id);
+      const arrow = document.getElementById("arrow-" + id);
+      submenu.classList.toggle("is-hidden");
+      arrow.classList.toggle("fa-chevron-down");
+      arrow.classList.toggle("fa-chevron-up");
+    }
   </script>
 </body>
 </html>
