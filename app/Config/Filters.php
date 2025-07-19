@@ -1,4 +1,5 @@
 <?php
+//----------------MODIFICADO POR JAFETH J---------------
 
 namespace Config;
 
@@ -34,6 +35,10 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
+
+        // ---------------------CAMBIOS JAFETH
+            'role' => \App\Filters\RoleFilter::class,
+        // ---------------------FIN CAMBIOS JAFETH
     ];
 
     /**

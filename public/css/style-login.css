@@ -1,0 +1,85 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Card visualmente más compacto y fondo blanco */
+.card.shadow-lg {
+    max-width: 850px;
+    margin: 20px auto;
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: #fff; /* FONDO BLANCO */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Centrado del lado izquierdo (imagen o logo) */
+.card .col-md-5 {
+    min-height: 100%;
+    text-align: center;
+}
+
+/* Inputs compactos */
+.form-control, .form-select {
+    border-radius: 8px;
+    font-size: 0.9rem;
+    padding: 0.4rem 0.6rem;
+}
+
+/* Quitar doble flecha de los selects */
+select.form-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1rem;
+    padding-right: 2rem;
+}
+
+/* Espaciado de formulario (lado derecho del card) */
+.card .col-md-7 {
+    padding: 1.5rem;
+}
+
+/* Agrupar selects de ubicación en una fila responsiva */
+.ubicacion-selects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.ubicacion-selects .col-md-4 {
+    flex: 1 1 100%;
+}
+@media (min-width: 768px) {
+    .ubicacion-selects .col-md-4 {
+        flex: 1;
+    }
+}
+
+/* Responsive: evitar scroll horizontal */
+@media (max-width: 991.98px) {
+    .card .col-md-5,
+    .card .col-md-7 {
+        padding: 1.5rem 1rem;
+    }
+
+    .card.shadow-lg {
+        margin: 20px 10px;
+    }
+}
+
+/* Espacio interior en inputs select para mejorar visibilidad de valores largos */
+select.form-select option {
+    padding: 4px 8px;
+    font-size: 0.9rem;
+}
