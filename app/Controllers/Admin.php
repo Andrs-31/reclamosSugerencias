@@ -180,35 +180,66 @@ class Admin extends BaseController
         }
         return $this->response->setJSON($reclamo);
     }
-
 public function getComentarios($reclamoId) {
-    $comentarios = $this->comentariosModel
-        ->select('comentarios.*, usuarios.nombre as autor')
-        ->join('usuarios', 'usuarios.id = comentarios.usuario_id')
-        ->where('comentarios.reclamo_id', $reclamoId)
-        ->orderBy('comentarios.fecha', 'ASC')
-        ->findAll();
+    try {
+        // Validar que el reclamo exista
+        $reclamoModel = new \App\Models\ReclamoModel();
+        if (!$reclamoModel->find($reclamoId)) {
+            return $this->response->setStatusCode(404)->setJSON([
+                'error' => 'El reclamo no existe'
+            ]);
+        }
+
+        $comentarios = $this->comentariosModel
+            ->select('comentarios.*, usuarios.nombre as autor')
+            ->join('usuarios', 'usuarios.id = comentarios.usuario_id')
+            ->where('comentarios.reclamo_id', $reclamoId)
+            ->orderBy('comentarios.fecha', 'desc')
+            ->findAll();
+            
+        return $this->response->setJSON($comentarios);
         
-    return $this->response->setJSON($comentarios);
+    } catch (\Exception $e) {
+        log_message('error', 'Error en getComentarios: ' . $e->getMessage());
+        return $this->response->setStatusCode(500)->setJSON([
+            'error' => 'Error interno al obtener comentarios'
+        ]);
+    }
 }
 
-
-public function agregarComentario()
-{
+public function agregarComentario() {
     $reclamoModel = new \App\Models\ReclamoModel();
     $comentarioModel = new \App\Models\ComentariosModel();
-    //$userId = 1; // Usuario de prueba
     $userId = session()->get('user_id');
 
     try {
-        $input = $this->request->getJSON(true);
-        
-        // Validación básica
-        if (empty($input['reclamo_id']) || empty($input['comentario']) || empty($input['new_status'])) {
-            throw new \RuntimeException('Todos los campos son requeridos');
+        // Verificar sesión
+        if (!$userId) {
+            throw new \RuntimeException('Debe iniciar sesión para comentar', 401);
         }
 
-        // Verificar si ya existe un comentario idéntico reciente
+        $input = $this->request->getJSON(true);
+        
+        // Validación de campos
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'reclamo_id' => 'required|numeric',
+            'comentario' => 'required|min_length[5]|max_length[2000]',
+            'new_status' => 'required|in_list[pendiente,en_proceso,solucionado]'
+        ]);
+
+        if (!$validation->run((array)$input)) {
+            $errors = $validation->getErrors();
+            throw new \RuntimeException(implode("\n", $errors), 400);
+        }
+
+        // Verificar que el reclamo existe
+        $reclamo = $reclamoModel->find($input['reclamo_id']);
+        if (!$reclamo) {
+            throw new \RuntimeException('El reclamo no existe', 404);
+        }
+
+        // Verificar comentario duplicado reciente
         $existingComment = $comentarioModel
             ->where('reclamo_id', $input['reclamo_id'])
             ->where('usuario_id', $userId)
@@ -217,61 +248,91 @@ public function agregarComentario()
             ->first();
 
         if ($existingComment && strtotime($existingComment['fecha']) > (time() - 60)) {
-            throw new \RuntimeException('Has enviado un comentario idéntico recientemente');
+            throw new \RuntimeException('Has enviado un comentario idéntico recientemente. Por favor espera un momento antes de enviar el mismo comentario nuevamente.');
         }
 
+        
         // Insertar comentario
         $comentarioData = [
             'reclamo_id' => $input['reclamo_id'],
             'usuario_id' => $userId,
-            'comentario' => $input['comentario']
+            'comentario' => $input['comentario'],
+            'fecha_creacion' => date('Y-m-d H:i:s')  // <- Aquí agregas la hora manual
         ];
+
         
-        if (!$comentarioModel->insert($comentarioData)) {
-            throw new \RuntimeException('Error al insertar comentario');
+        if (!$comentarioModel->save($comentarioData)) {
+            throw new \RuntimeException('Error al guardar el comentario');
         }
 
         // Actualizar estado del reclamo
-        $reclamoModel->update($input['reclamo_id'], [
+        if (!$reclamoModel->update($input['reclamo_id'], [
             'estado' => $input['new_status'],
             'fecha_actualizacion' => date('Y-m-d H:i:s')
-        ]);
-
-        
-        // Obtener el email del ciudadano
-        $reclamo = $reclamoModel
-            ->select('reclamos.*, usuarios.email as ciudadano_email')
-            ->join('usuarios', 'usuarios.id = reclamos.usuario_id') // ajusta si usas cédula u otro ID
-            ->find($input['reclamo_id']);
-
-        if ($reclamo && !empty($reclamo['ciudadano_email'])) {
-            $email = \Config\Services::email();
-
-            $email->setTo($reclamo['ciudadano_email']);
-            $email->setSubject('Actualización en su reclamo');
-            $email->setMessage(
-                "<p>Estimado ciudadano,</p>
-                <p>Se ha agregado un nuevo comentario a su reclamo <strong>#{$input['reclamo_id']}</strong>.</p>
-                <p><strong>Comentario:</strong> {$input['comentario']}</p>
-                <p><strong>Nuevo estado:</strong> {$input['new_status']}</p>
-                <p>Gracias por utilizar nuestra plataforma.</p>"
-            );
-
-            if (!$email->send()) {
-                log_message('error', 'Error al enviar correo: ' . print_r($email->printDebugger(['headers']), true));
-            }
+        ])) {
+            throw new \RuntimeException('Error al actualizar el estado del reclamo');
         }
+        
+        // Enviar notificación por correo
+        $this->enviarNotificacionEmail($input['reclamo_id'], $input['comentario'], $input['new_status']);
         
         return $this->response->setJSON([
             'success' => true,
-            'message' => 'Comentario agregado exitosamente'
+            'message' => 'Comentario agregado exitosamente. Hora actual PHP: ' . date('Y-m-d H:i:s'),
+            'data' => [
+                'comentario_id' => $comentarioModel->getInsertID()
+            ]
         ]);
 
-
-    } catch (\Exception $e) {
-        return $this->response->setStatusCode(400)->setJSON([
+    } catch (\RuntimeException $e) {
+        $statusCode = $e->getCode() >= 400 && $e->getCode() < 600 ? $e->getCode() : 400;
+        return $this->response->setStatusCode($statusCode)->setJSON([
             'error' => $e->getMessage()
         ]);
+    } catch (\Exception $e) {
+        log_message('error', 'Error en agregarComentario: ' . $e->getMessage());
+        return $this->response->setStatusCode(500)->setJSON([
+            'error' => 'Ocurrió un error interno al procesar tu comentario'
+        ]);
+    }
+}
+
+private function enviarNotificacionEmail($reclamoId, $comentario, $estado) {
+    try {
+        $reclamoModel = new \App\Models\ReclamoModel();
+        $reclamo = $reclamoModel
+            ->select('reclamos.*, usuarios.email as ciudadano_email')
+            ->join('usuarios', 'usuarios.id = reclamos.usuario_id')
+            ->find($reclamoId);
+
+        if (!$reclamo || empty($reclamo['ciudadano_email'])) {
+            return false;
+        }
+
+        $email = \Config\Services::email();
+        $email->setTo($reclamo['ciudadano_email']);
+        $email->setSubject("Actualización en su reclamo #{$reclamoId}");
+        
+        $estadoTexto = str_replace('_', ' ', $estado);
+        $estadoTexto = ucfirst($estadoTexto);
+        
+        $message = view('emails/actualizacion_reclamo', [
+            'reclamoId' => $reclamoId,
+            'comentario' => $comentario,
+            'estado' => $estadoTexto
+        ]);
+        
+        $email->setMessage($message);
+        
+        if (!$email->send()) {
+            log_message('error', 'Error al enviar email: ' . $email->printDebugger(['headers']));
+            return false;
+        }
+        
+        return true;
+    } catch (\Exception $e) {
+        log_message('error', 'Error enviando notificación: ' . $e->getMessage());
+        return false;
     }
 }
 

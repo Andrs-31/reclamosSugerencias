@@ -13,6 +13,13 @@ $routes->get('/', 'Login::index'); // PARA QUE LA PRIMERA PAGINA SEA LOGIN
 
 $routes->setDefaultNamespace('App\Controllers'); // Establece el espacio de nombres predeterminado para los controladores
 
+$routes->group('api', ['filter' => 'cors'], function($routes) {
+    $routes->get('estadisticas', 'Api\Estadisticas::index');
+    $routes->get('estadisticas/por-categoria', 'Api\Estadisticas::porCategoria');
+    $routes->get('estadisticas/por-provincia', 'Api\Estadisticas::porProvincia');
+    $routes->get('estadisticas/comentarios', 'Api\Estadisticas::totalComentarios');
+});
+
 
 $routes->get('register', 'Auth::register'); // Ruta para mostrar el formulario de registro
 $routes->post('register', 'Auth::create'); // Ruta para procesar el registro
