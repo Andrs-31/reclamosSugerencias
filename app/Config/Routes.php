@@ -13,6 +13,7 @@ $routes->get('/', 'Login::index'); // PARA QUE LA PRIMERA PAGINA SEA LOGIN
 
 $routes->setDefaultNamespace('App\Controllers'); // Establece el espacio de nombres predeterminado para los controladores
 
+
 $routes->get('register', 'Auth::register'); // Ruta para mostrar el formulario de registro
 $routes->post('register', 'Auth::create'); // Ruta para procesar el registro
 $routes->get('login', 'Login::index'); // Ruta para mostrar el formulario de inicio de sesión
@@ -38,6 +39,7 @@ $routes->get('/dashboard', 'Admin::dashboard', ['filter' => 'role:admin']);
 // Reclamos
 $routes->get('/reclamos', 'Admin::reclamosList', ['filter' => 'role:admin']);
 $routes->get('/reclamos/(:segment)', 'Admin::reclamosList/$1', ['filter' => 'role:admin']);
+$routes->get('/reclamos/usuario_id/(:num)', 'Admin::reclamosList/$1', ['filter' => 'role:admin']);
 $routes->post('/reclamos/update', 'Admin::updateReclamo', ['filter' => 'role:admin']);
 $routes->get('admin/reclamos/contar', 'Admin::obtenerReclamoCounts', ['filter' => 'role:admin']);
 
@@ -75,5 +77,11 @@ $routes->post('/ciudadano/eliminar-reclamo/(:num)', 'Ciudadano::eliminarReclamo/
 $routes->get('/ciudadano/ver-respuesta/(:num)', 'Ciudadano::verRespuesta/$1', ['filter' => 'role:ciudadano']);
 $routes->post('/ciudadano/responder-comentario/(:num)', 'Ciudadano::responderComentario/$1', ['filter' => 'role:ciudadano']);
 $routes->post('/ciudadano/marcar-solucionado/(:num)', 'Ciudadano::marcarSolucionado/$1', ['filter' => 'role:ciudadano']);
-
+$routes->get('ciudadano/preguntas_frecuentes', 'Ciudadano::preguntas_frecuentes', ['filter' => 'role:ciudadano']);
+$routes->get('ciudadano/tramites', 'Ciudadano::tramites', ['filter' => 'role:ciudadano']);
+$routes->get('ciudadano/perfil', 'Ciudadano::perfil', ['filter' => 'role:ciudadano']);
+$routes->post('ciudadano/actualizar-perfil', 'Ciudadano::actualizarPerfil', ['filter' => 'role:ciudadano']);
+$routes->post('ciudadano/cambiar-password', 'Ciudadano::cambiarPassword', ['filter' => 'role:ciudadano']);
+$routes->post('ciudadano/actualizar-notificaciones', 'Ciudadano::actualizarNotificaciones', ['filter' => 'role:ciudadano']);
+$routes->post('ciudadano/actualizar-preferencias', 'Ciudadano::actualizarPreferencias', ['filter' => 'role:ciudadano']);
 //------------------------------END RUTAS DE CIUDADANO (David)

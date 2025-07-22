@@ -1,5 +1,5 @@
 <?= $this->extend('layouts/ciudadano') ?>
-<?= $this->section('contenido') ?>
+<?= $this->section('content') ?>
   <h1 class="title">Estadísticas de Mis Reclamos</h1>
   
   <div class="columns">

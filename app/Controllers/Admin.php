@@ -45,32 +45,42 @@ class Admin extends BaseController
         return $this->response->setJSON($this->_getReclamoCounts());
     }
 
-    public function dashboard()
-        {
-            // Obtener conteos básicos
-            $counts = $this->_getReclamoCounts();
-            
-            // Obtener datos para el gráfico por provincia
-            $reclamosPorProvincia = $this->reclamosModel
-                ->select('provincia.nombre_provincia, COUNT(reclamos.id) as total')
-                ->join('usuarios', 'usuarios.id = reclamos.usuario_id')
-                ->join('provincia', 'provincia.codigo_provincia = usuarios.provincia_id')
-                ->groupBy('usuarios.provincia_id, provincia.nombre_provincia')
-                ->orderBy('total', 'DESC')
-                ->findAll();
-
-            $data = [
-                'titulo' => 'Dashboard',
-                'reclamosPorProvincia' => $reclamosPorProvincia,
-                'provincias' => $this->provinciaModel->findAll() // Para referencia si la necesitas
-            ];
-
-            // Fusionar con los conteos existentes
-            return view('admin/dashboard', array_merge($data, $counts));
-        }
-
-    public function reclamosList($status = null)
+   public function dashboard()
     {
+        // Obtener conteos básicos
+        $counts = $this->_getReclamoCounts();
+        
+        // Reclamos por provincia
+        $reclamosPorProvincia = $this->reclamosModel
+            ->select('provincia.nombre_provincia, COUNT(reclamos.id) as total')
+            ->join('usuarios', 'usuarios.id = reclamos.usuario_id')
+            ->join('provincia', 'provincia.codigo_provincia = usuarios.provincia_id')
+            ->groupBy('usuarios.provincia_id, provincia.nombre_provincia')
+            ->orderBy('total', 'DESC')
+            ->findAll();
+
+        // Reclamos por categoría
+        $reclamosPorCategoria = $this->reclamosModel
+            ->select('categorias.nombre_categoria as categoria, COUNT(reclamos.id) as total')
+            ->join('categorias', 'categorias.id = reclamos.categoria_id')
+            ->groupBy('categorias.id, categorias.nombre_categoria')
+            ->orderBy('total', 'DESC')
+            ->findAll();
+
+        $data = [
+            'titulo' => 'Dashboard',
+            'reclamosPorProvincia' => $reclamosPorProvincia,
+            'reclamosPorCategoria' => $reclamosPorCategoria,
+            'provincias' => $this->provinciaModel->findAll(),
+            'categorias' => $this->categoriaModel->findAll()
+        ];
+
+        return view('admin/dashboard', array_merge($data, $counts));
+    }
+
+    public function reclamosList($statusOrUserId= null)
+    {
+        log_message('debug', 'Reclamos List - Status or ID: ' . $statusOrUserId);
         $usuarios = $this->usuariosModel->findAll();
         $categorias = $this->categoriaModel->findAll();
         $provincias = $this->provinciaModel->findAll();
@@ -87,11 +97,21 @@ class Admin extends BaseController
                     usuarios.provincia_id, usuarios.distrito_id, usuarios.corregimiento_id')
             ->join('usuarios', 'usuarios.id = reclamos.usuario_id')
             ->join('categorias', 'categorias.id = reclamos.categoria_id');
-
-        // Filtro por estado
-        if ($status && in_array($status, ['pendiente', 'en_proceso', 'solucionado'])) {
-            $reclamosQuery->where('reclamos.estado', $status);
+        
+         
+        $status = null;
+        // Lógica de filtrado mejorada
+        if (is_numeric($statusOrUserId)) {
+            // Es un ID de usuario
+            $reclamosQuery->where('reclamos.usuario_id', $statusOrUserId);
+            log_message('debug', 'Filtrando por usuario ID: '.$statusOrUserId);
+        } elseif (in_array($statusOrUserId, ['pendiente', 'en_proceso', 'solucionado'])) {
+            // Es un estado válido
+            $reclamosQuery->where('reclamos.estado', $statusOrUserId);
+            $status = $statusOrUserId; // Guardar el estado para la vista
+            log_message('debug', 'Filtrando por estado: '.$statusOrUserId);
         }
+
 
         // Búsqueda general (independiente de ubicación)
         if ($searchTerm) {
@@ -114,6 +134,7 @@ class Admin extends BaseController
                 }
             }
         }
+        
 
         $reclamos = $reclamosQuery->findAll();
 

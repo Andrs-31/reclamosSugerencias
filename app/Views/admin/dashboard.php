@@ -175,62 +175,66 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  // Reclamos por Categoría - Barra Horizontal
-  const ctxCategoria = document.getElementById('chartCategoria').getContext('2d');
-  new Chart(ctxCategoria, {
+
+const ctxCategoria = document.getElementById('chartCategoria').getContext('2d');
+
+// Preparar datos para la gráfica
+const categorias = <?= json_encode(array_column($reclamosPorCategoria, 'categoria')) ?>;
+const reclamosXCategoria = <?= json_encode(array_column($reclamosPorCategoria, 'total')) ?>;
+
+new Chart(ctxCategoria, {
     type: 'bar',
     data: {
-      labels: ['Agua', 'Luz', 'Basura', 'Transporte', 'Seguridad'],
-      datasets: [{
-        label: 'Cantidad de Reclamos',
-        data: [40, 30, 50, 25, 15], // Estos datos aún son estáticos, se pueden hacer dinámicos si se requiere
-        backgroundColor: [
-          'rgba(54, 162, 235, 0.8)',
-          'rgba(255, 206, 86, 0.8)',
-          'rgba(255, 99, 132, 0.8)',
-          'rgba(75, 192, 192, 0.8)',
-          'rgba(153, 102, 255, 0.8)'
-        ],
-        borderColor: [
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(255, 99, 132, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)'
-        ],
-        borderWidth: 2
-      }]
+        labels: categorias,
+        datasets: [{
+            label: 'Cantidad de Reclamos',
+            data: reclamosXCategoria,
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(255, 206, 86, 0.8)',
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(153, 102, 255, 0.8)'
+            ],
+            borderColor: [
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)'
+            ],
+            borderWidth: 2
+        }]
     },
     options: {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: {
-          beginAtZero: true,
-          grid: {
-            color: 'rgba(0,0,0,0.1)'
-          }
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(0,0,0,0.1)'
+                }
+            },
+            y: {
+                grid: {
+                    color: 'rgba(0,0,0,0.1)'
+                }
+            }
         },
-        y: {
-          grid: {
-            color: 'rgba(0,0,0,0.1)'
-          }
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0,0,0,0.8)',
+                titleColor: 'white',
+                bodyColor: 'white'
+            }
         }
-      },
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          backgroundColor: 'rgba(0,0,0,0.8)',
-          titleColor: 'white',
-          bodyColor: 'white'
-        }
-      }
     }
-  });
-
+});
   // Reclamos por Estado - Barra Vertical
   const ctxEstado = document.getElementById('chartEstado').getContext('2d');
   new Chart(ctxEstado, {

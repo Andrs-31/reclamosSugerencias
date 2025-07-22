@@ -8,54 +8,51 @@ use App\Models\UsuarioModel;
 
 class Ciudadano extends BaseController
 {
-    public function dashboard()
-    {
-        return view('ciudadano/dashboard', ['titulo' => 'Dashboard Ciudadano']);
-    }
+public function dashboard()
+{
+    $reclamosModel = new \App\Models\ReclamoModel();
+    $usuario_id = session()->get('user_id') ?? 1;
 
-    public function estadisticas()
-    {
-        $reclamosModel = new ReclamoModel();
-        $usuario_id = session()->get('user_id');
-        
-        // Obtener conteos por estado
-        $pendientes = $reclamosModel
+    // Estadísticas
+    $estadisticas = [
+        'pendientes' => $reclamosModel
             ->where('usuario_id', $usuario_id)
             ->where('estado', 'pendiente')
-            ->countAllResults();
-            
-        $enProceso = $reclamosModel
+            ->countAllResults(),
+
+        'en_proceso' => $reclamosModel
             ->where('usuario_id', $usuario_id)
             ->where('estado', 'en_proceso')
-            ->countAllResults();
-            
-        $solucionados = $reclamosModel
+            ->countAllResults(),
+
+        'solucionados' => $reclamosModel
             ->where('usuario_id', $usuario_id)
             ->whereIn('estado', ['resuelto', 'solucionado'])
-            ->countAllResults();
-            
-        $total = $reclamosModel
-            ->where('usuario_id', $usuario_id)
-            ->countAllResults();
-        
-        $estadisticas = [
-            'pendientes' => $pendientes,
-            'en_proceso' => $enProceso,
-            'solucionados' => $solucionados,
-            'total' => $total
-        ];
-        
-        return view('ciudadano/estadisticas', [
-            'estadisticas' => $estadisticas,
-            'titulo' => 'Estadísticas de Reclamos'
-        ]);
-    }
+            ->countAllResults(),
 
-    public function misReclamos()
+        'total' => $reclamosModel
+            ->where('usuario_id', $usuario_id)
+            ->countAllResults()
+    ];
+
+    // Reclamos recientes
+    $reclamos = $reclamosModel
+        ->where('usuario_id', $usuario_id)
+        ->orderBy('fecha', 'DESC')
+        ->findAll(); // o ->limit(3)->find(); si quieres traer solo 3 directamente
+
+    return view('ciudadano/dashboard', [
+        'titulo' => 'Dashboard Ciudadano',
+        'estadisticas' => $estadisticas,
+        'reclamos' => $reclamos
+    ]);
+}
+     public function misReclamos()
     {
+        helper('text');
         // Obtener el ID del usuario de la sesión (esto debe implementarse según tu sistema de autenticación)
         // Por ahora uso un valor temporal
-        $usuario_id = session()->get('user_id');
+        $usuario_id = session()->get('user_id') ?? 1; // Cambiar según tu implementación de sesiones
         
         $reclamosModel = new ReclamoModel();
         $categoriasModel = new CategoriaModel();
@@ -83,6 +80,7 @@ class Ciudadano extends BaseController
             'titulo' => 'Mis Reclamos'
         ]);
     }
+
 
     public function nuevoReclamo()
     {
@@ -427,4 +425,163 @@ class Ciudadano extends BaseController
                            ->with('error', 'Error al actualizar el estado. Inténtalo de nuevo.');
         }
     }
+
+    // Método para mostrar la vista de preguntas frecuentes
+    public function preguntas_frecuentes()
+    {
+        return view('ciudadano/preguntas_frecuentes', [
+            'titulo' => 'Preguntas Frecuentes'
+        ]);
+    }
+
+    public function tramites()
+{
+    return view('ciudadano/tramites', [
+        'titulo' => 'Información sobre Trámites'
+    ]);
+}
+
+public function perfil()
+{
+    $usuarioModel = new UsuarioModel();
+    $usuario_id = session()->get('user_id') ?? 1;
+    
+    $usuario = $usuarioModel->find($usuario_id);
+    
+    return view('ciudadano/perfil', [
+        'titulo' => 'Configuración de Perfil',
+        'usuario' => $usuario
+    ]);
+}
+
+public function actualizarPerfil()
+{
+    $usuarioModel = new UsuarioModel();
+    $usuario_id = session()->get('user_id') ?? 1;
+    
+    $datos = $this->request->getPost();
+    
+    // Validaciones básicas
+    $validationRules = [
+        'nombre' => 'required|min_length[3]',
+        'apellido' => 'required|min_length[3]',
+        'email' => 'required|valid_email',
+    ];
+    
+    if (!$this->validate($validationRules)) {
+        return redirect()->back()
+                       ->with('error', 'Por favor corrige los errores en el formulario.')
+                       ->withInput();
+    }
+    
+    // Actualizar el usuario
+    if ($usuarioModel->update($usuario_id, $datos)) {
+        return redirect()->back()
+                       ->with('success', 'Tu perfil ha sido actualizado exitosamente.');
+    } else {
+        return redirect()->back()
+                       ->with('error', 'Error al actualizar el perfil. Inténtalo de nuevo.')
+                       ->withInput();
+    }
+}
+
+public function cambiarPassword()
+{
+    $usuarioModel = new UsuarioModel();
+    $usuario_id = session()->get('user_id') ?? 1;
+    
+    $datos = $this->request->getPost();
+    
+    // Validaciones
+    $validationRules = [
+        'password_actual' => 'required',
+        'nuevo_password' => 'required|min_length[8]|strong_password',
+        'confirmar_password' => 'required|matches[nuevo_password]',
+    ];
+    
+    if (!$this->validate($validationRules)) {
+        return redirect()->back()
+                       ->with('error', 'Por favor corrige los errores en el formulario.')
+                       ->withInput();
+    }
+    
+    // Verificar contraseña actual
+    $usuario = $usuarioModel->find($usuario_id);
+    if (!password_verify($datos['password_actual'], $usuario['password'])) {
+        return redirect()->back()
+                       ->with('error', 'La contraseña actual no es correcta.')
+                       ->withInput();
+    }
+    
+    // Actualizar contraseña
+    $updateData = [
+        'password' => password_hash($datos['nuevo_password'], PASSWORD_DEFAULT)
+    ];
+    
+    if ($usuarioModel->update($usuario_id, $updateData)) {
+        return redirect()->back()
+                       ->with('success', 'Tu contraseña ha sido cambiada exitosamente.');
+    } else {
+        return redirect()->back()
+                       ->with('error', 'Error al cambiar la contraseña. Inténtalo de nuevo.')
+                       ->withInput();
+    }
+}
+
+public function actualizarNotificaciones()
+{
+    $usuarioModel = new UsuarioModel();
+    $usuario_id = session()->get('user_id') ?? 1;
+
+    $datos = $this->request->getPost();
+    
+    // Preparar datos para actualizar
+    $updateData = [
+        'notificaciones_email' => isset($datos['notificaciones_email']) ? 1 : 0,
+        'notificaciones_sms' => isset($datos['notificaciones_sms']) ? 1 : 0,
+        'frecuencia_notificaciones' => $datos['frecuencia_notificaciones']
+    ];
+    
+    if ($usuarioModel->update($usuario_id, $updateData)) {
+        return redirect()->back()
+                       ->with('success', 'Tus preferencias de notificación han sido actualizadas.');
+    } else {
+        return redirect()->back()
+                       ->with('error', 'Error al actualizar las preferencias. Inténtalo de nuevo.');
+    }
+}
+
+public function actualizarPreferencias()
+{
+    $usuarioModel = new UsuarioModel();
+    $usuario_id = session()->get('user_id') ?? 1;
+
+    $datos = $this->request->getPost();
+
+    // Solo incluir datos no vacíos
+    $updateData = [];
+    if (!empty($datos['idioma'])) {
+        $updateData['idioma'] = $datos['idioma'];
+    }
+    if (!empty($datos['tema'])) {
+        $updateData['tema'] = $datos['tema'];
+    }
+    if (!empty($datos['zona_horaria'])) {
+        $updateData['zona_horaria'] = $datos['zona_horaria'];
+    }
+
+    if (!empty($updateData)) {
+        if ($usuarioModel->update($usuario_id, $updateData)) {
+            return redirect()->back()
+                             ->with('success', 'Tus preferencias del sistema han sido actualizadas.');
+        } else {
+            return redirect()->back()
+                             ->with('error', 'Error al actualizar las preferencias. Inténtalo de nuevo.');
+        }
+    } else {
+        return redirect()->back()
+                         ->with('error', 'No se detectaron cambios para actualizar.');
+    }
+}
+
 }

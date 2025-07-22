@@ -1,84 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="utf-8">
-    <title><?= lang('Errors.badRequest') ?></title>
+    <meta charset="UTF-8">
+    <title>Solicitud incorrecta - Error 400</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        div.logo {
-            height: 200px;
-            width: 155px;
-            display: inline-block;
-            opacity: 0.08;
-            position: absolute;
-            top: 2rem;
-            left: 50%;
-            margin-left: -73px;
-        }
         body {
-            height: 100%;
-            background: #fafafa;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            color: #777;
-            font-weight: 300;
+            background-color: #f8f9fa;
+        }
+        .error-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex-direction: column;
+            padding: 2rem;
         }
         h1 {
-            font-weight: lighter;
-            letter-spacing: normal;
-            font-size: 3rem;
-            margin-top: 0;
-            margin-bottom: 0;
-            color: #222;
+            font-size: 6rem;
+            font-weight: 700;
+            color: #ffc107;
         }
-        .wrap {
-            max-width: 1024px;
-            margin: 5rem auto;
-            padding: 2rem;
-            background: #fff;
-            text-align: center;
-            border: 1px solid #efefef;
-            border-radius: 0.5rem;
-            position: relative;
-        }
-        pre {
-            white-space: normal;
-            margin-top: 1.5rem;
-        }
-        code {
-            background: #fafafa;
-            border: 1px solid #efefef;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            display: block;
+        h2 {
+            font-weight: 400;
+            color: #6c757d;
         }
         p {
-            margin-top: 1.5rem;
+            margin-top: 1rem;
+            color: #6c757d;
         }
-        .footer {
+        .btn-home {
             margin-top: 2rem;
-            border-top: 1px solid #efefef;
-            padding: 1em 2em 0 2em;
-            font-size: 85%;
-            color: #999;
-        }
-        a:active,
-        a:link,
-        a:visited {
-            color: #dd4814;
         }
     </style>
 </head>
 <body>
-<div class="wrap">
-    <h1>400</h1>
 
-    <p>
-        <?php if (ENVIRONMENT !== 'production') : ?>
+<div class="error-container">
+    <h1>400</h1>
+    <h2>¡Solicitud incorrecta!</h2>
+    <p>La solicitud enviada no es válida o está incompleta.</p>
+
+    <?php if (ENVIRONMENT !== 'production' && isset($message)) : ?>
+        <div class="alert alert-warning mt-4 text-start" style="max-width: 600px; margin: auto;">
+            <strong>Detalles del error:</strong><br>
             <?= nl2br(esc($message)) ?>
-        <?php else : ?>
-            <?= lang('Errors.sorryBadRequest') ?>
-        <?php endif; ?>
-    </p>
+        </div>
+    <?php endif; ?>
+
+    <a href="<?= base_url() ?>" class="btn btn-warning btn-home">Volver al inicio</a>
 </div>
+
 </body>
 </html>

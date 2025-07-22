@@ -52,14 +52,17 @@
                   <td><?= esc($rolesMap[$ciudadano['rol_id']] ?? 'Desconocido') ?></td>
                   <td>
                     <div class="buttons is-small">
+                       <!-- Botón para editar -->
                       <button class="button is-small is-light" title="Editar" onclick="openCitizenModal(<?= $ciudadano['id'] ?>, '<?= esc($ciudadano['nombre'], 'js') ?>', '<?= esc($ciudadano['email'], 'js') ?>')">
                         <span class="icon"><i class="fas fa-edit"></i></span>
                         <span>Editar</span>
                       </button>
-                      <!-- <a href="<?= base_url('ciudadanos/delete/' . $ciudadano['id']) ?>" class="button is-small is-danger is-light" title="Eliminar" onclick="return confirm('¿Está seguro de eliminar este ciudadano?');">
-                        <span class="icon"><i class="fas fa-trash"></i></span>
-                        <span>Eliminar</span>
-                      </a> -->
+
+                      <!-- Botón para ver reclamos -->
+                      <a href="<?= base_url('reclamos/usuario_id/' . $ciudadano['id']) ?>" class="button is-small is-link" title="Ver Reclamos">
+                        <span class="icon"><i class="fas fa-eye"></i></span>
+                        <span>Reclamos</span>
+                      </a>
                     </div>
                   </td>
                 </tr>
