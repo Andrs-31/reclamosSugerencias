@@ -158,11 +158,11 @@
             </a>
           </div>
           <div class="column">
-            <a href="<?= base_url('reportes') ?>" class="button is-info is-fullwidth is-large">
+           <a href="http://localhost/webConsumo/Reclamos_api.html" target="_blank" rel="noopener noreferrer" class="button is-info is-fullwidth is-large">
               <span class="icon">
                 <i class="fas fa-chart-line"></i>
               </span>
-              <span>Generar Reportes</span>
+              <span>Ver reportes Públicos</span>
             </a>
           </div>
         </div>
