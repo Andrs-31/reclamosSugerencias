@@ -1,590 +1,619 @@
 <?= $this->extend('layouts/ciudadano') ?>
 <?= $this->section('content') ?>
 
-
 <!-- Banner principal con efecto de gradiente mejorado -->
-<section class="welcome-section text-white py-5">
+<section class="welcome-section">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-8">
-                <h1 class="display-4 fw-bold mb-3 animate__animated animate__bounceIn">
+                <h1 class="welcome-title animate__animated animate__fadeInDown">
                     Bienvenido al Portal Ciudadano
                 </h1>
-                <p class="lead mb-4 animate__animated animate__fadeIn animate__delay-1s">
+                <p class="welcome-subtitle animate__animated animate__fadeIn animate__delay-1s">
                     Registra tus reclamos y mira tus reportes en línea de manera sencilla.
                 </p>
-                <div class="d-flex flex-wrap gap-3 animate__animated animate__fadeIn animate__delay-2s">
-                    <a href="<?= site_url('ciudadano/nuevo-reclamo') ?>" class="btn btn-light btn-lg px-4 shadow-sm">
+                <div class="welcome-actions animate__animated animate__fadeIn animate__delay-2s">
+                    <a href="<?= site_url('ciudadano/nuevo-reclamo') ?>" class="btn btn-primary btn-lg">
                         <i class="bi bi-plus-circle me-2"></i> Crear nuevo reclamo
                     </a>
-                    <a href="<?= site_url('ciudadano/mis-reclamos') ?>" class="btn btn-outline-light btn-lg px-4 shadow-sm">
+                    <a href="<?= site_url('ciudadano/mis-reclamos') ?>" class="btn btn-outline-light btn-lg">
                         <i class="bi bi-list-check me-2"></i> Ver mis reclamos
                     </a>
                 </div>
             </div>
-            <div class="col-lg-4 d-none d-lg-block text-center animate__animated animate__fadeIn">
-                <img src="<?= base_url('assets/images/portal-ciudadano.png') ?>" alt="Ilustración portal ciudadano" class="img-fluid floating" style="max-height: 200px;">
+            <div class="col-lg-4 d-none d-lg-block animate__animated animate__fadeIn animate__delay-1s">
+                <img src="<?= base_url('assets/images/portal-ciudadano.png') ?>" alt="Ilustración portal ciudadano" class="welcome-image">
             </div>
         </div>
     </div>
 </section>
 
-
-<!-- Estadísticas dinámicas -->
-<div class="container my-5">
-    <div class="dashboard-section">
-        <h2 class="section-title">
-            <i class="bi bi-speedometer2"></i> Resumen de mis reclamos
-        </h2>
-        <div class="stats-grid">
-            <div class="stat-card pending">
-                <div class="stat-icon">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                </div>
-                <div class="stat-value"><?= esc($estadisticas['pendientes']) ?></div>
-                <div class="stat-label">Pendientes</div>
+<!-- Contenido principal -->
+<main class="dashboard-container">
+    <!-- Estadísticas dinámicas -->
+    <section class="dashboard-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-speedometer2"></i> Resumen de mis reclamos
+                </h2>
             </div>
-
-            <div class="stat-card in-progress">
-                <div class="stat-icon">
-                    <i class="bi bi-hourglass-split"></i>
+            
+            <div class="stats-grid">
+                <div class="stat-card pending">
+                    <div class="stat-icon">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+                    <div class="stat-value"><?= esc($estadisticas['pendientes']) ?></div>
+                    <div class="stat-label">Pendientes</div>
                 </div>
-                <div class="stat-value"><?= esc($estadisticas['en_proceso']) ?></div>
-                <div class="stat-label">En proceso</div>
-            </div>
 
-            <div class="stat-card resolved">
-                <div class="stat-icon">
-                    <i class="bi bi-check-circle-fill"></i>
+                <div class="stat-card in-progress">
+                    <div class="stat-icon">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                    <div class="stat-value"><?= esc($estadisticas['en_proceso']) ?></div>
+                    <div class="stat-label">En proceso</div>
                 </div>
-                <div class="stat-value"><?= esc($estadisticas['solucionados']) ?></div>
-                <div class="stat-label">Resueltos</div>
+
+                <div class="stat-card resolved">
+                    <div class="stat-icon">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <div class="stat-value"><?= esc($estadisticas['solucionados']) ?></div>
+                    <div class="stat-label">Resueltos</div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Reclamos recientes -->
+    <section class="dashboard-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-clock-history"></i> Mis reclamos recientes
+                </h2>
+                <a href="<?= site_url('ciudadano/mis-reclamos') ?>" class="view-all">
+                    Ver todos <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+
+            <div class="complaints-list">
+                <?php $reclamosMostrados = array_slice($reclamos, 0, 3); ?>
+                <?php foreach ($reclamosMostrados as $reclamo): ?>
+                    <?php 
+                        $estadoClase = strtolower(str_replace(' ', '-', $reclamo['estado']));
+                        $fechaFormateada = date('d M Y', strtotime($reclamo['fecha']));
+                    ?>
+                    <div class="complaint-card">
+                        <div class="complaint-header">
+                            <span class="complaint-id">#<?= esc($reclamo['id']) ?></span>
+                            <span class="complaint-date"><?= esc($fechaFormateada) ?></span>
+                        </div>
+                        <h3 class="complaint-title"><?= esc($reclamo['descripcion']) ?></h3>
+                        <div class="complaint-footer">
+                            <span class="complaint-status <?= esc($estadoClase) ?>">
+                                <?= esc(ucfirst($reclamo['estado'])) ?>
+                            </span>
+                            <a href="<?= site_url('ciudadano/ver-respuesta/' . $reclamo['id']) ?>" class="complaint-action">
+                                <i class="bi bi-eye"></i> Ver detalles
+                            </a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+
+    <!-- Acciones rápidas -->
+    <section class="dashboard-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-lightning-charge-fill"></i> Acciones rápidas
+                </h2>
+            </div>
+
+            <div class="quick-actions-grid">
+                <a href="<?= site_url('ciudadano/tramites') ?>" class="quick-action-card">
+                    <div class="action-icon">
+                        <i class="bi bi-file-earmark-text-fill"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>Consultar trámites</h3>
+                        <p>Revisa los trámites disponibles y sus requisitos</p>
+                        <span class="action-link">
+                            Ver trámites <i class="bi bi-arrow-right"></i>
+                        </span>
+                    </div>
+                </a>
+
+                <a href="<?= site_url('ciudadano/preguntas_frecuentes') ?>" class="quick-action-card">
+                    <div class="action-icon">
+                        <i class="bi bi-question-circle-fill"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>Preguntas frecuentes</h3>
+                        <p>Encuentra respuestas a las dudas más comunes</p>
+                        <span class="action-link">
+                            Ver ayuda <i class="bi bi-arrow-right"></i>
+                        </span>
+                    </div>
+                </a>
+
+                <a href="<?= site_url('ciudadano/perfil') ?>" class="quick-action-card">
+                    <div class="action-icon">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>Mi perfil</h3>
+                        <p>Actualiza tus datos personales y preferencias</p>
+                        <span class="action-link">
+                            Editar perfil <i class="bi bi-arrow-right"></i>
+                        </span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Entidades accesibles -->
+
+   <section class="dashboard-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-building"></i> Otras entidades accesibles
+                </h2>
+            </div>
+
+  <div class="logos-grid">
+    <!-- Fila 1 -->
+    <a href="https://www.innovacion.gob.pa/" target="_blank" class="logo-item">
+      <img src="<?= base_url('img/aig-logo.png') ?>" alt="AIG">
+    </a>
+    <a href="https://www.acodeco.gob.pa/" target="_blank" class="logo-item">
+      <img src="<?= base_url('img/acodeco-logo.png') ?>" alt="ACODECO">
+    </a>
+    <a href="https://www.antai.gob.pa/" target="_blank" class="logo-item">
+      <img src="<?= base_url('img/anati-logo.png') ?>" alt="ANATI">
+    </a>
+    <a href="https://www.asep.gob.pa/" target="_blank" class="logo-item">
+      <img src="<?= base_url('img/asep-logo.jpeg') ?>" alt="ASEP">
+    </a>
+    <a href="https://www.banconal.com.pa/" target="_blank" class="logo-item">
+      <img src="<?= base_url('img/banconacional-logo.jpeg') ?>" alt="Banco Nacional de Panamá">
+    </a>
+
+    <!-- Fila 2 -->
+    <a href="https://www.cajadeahorros.com.pa/" target="_blank" class="logo-item">
+      <img src="<?= base_url('img/cajaahorro-logo.jpeg') ?>" alt="Caja de Ahorros">
+    </a>
+    <a href="https://www.pancanal.com/" target="_blank" class="logo-item">
+      <img src="<?= base_url('img/canalpanama-logo.png') ?>" alt="Canal de Panamá">
+    </a>
+    <a href="https://www.idaan.gob.pa/" target="_blank" class="logo-item">
+      <img src="<?= base_url('img/idaan-logo.png') ?>" alt="IDAAN">
+    </a>
+    <a href="https://www.ifarhu.gob.pa/" target="_blank" class="logo-item">
+      <img src="<?= base_url('img/ifarhu-logo.png') ?>" alt="IFARHU">
+    </a>
+    <a href="https://www.defensoria.gob.pa/" target="_blank" class="logo-item">
+      <img src="<?= base_url('img/defensoria-logo.png') ?>" alt="Defensoría del Pueblo">
+    </a>
+  </div>
 </div>
-
-<!-- Reclamos recientes -->
-<div class="container my-5">
-    <div class="dashboard-section">
-        <div class="section-header">
-            <h2 class="section-title">
-                <i class="bi bi-clock-history"></i> Mis reclamos recientes
-            </h2>
-            <a href="<?= site_url('ciudadano/mis-reclamos') ?>" class="view-all">
-                Ver todos <i class="bi bi-chevron-right"></i>
-            </a>
-        </div>
-
-        <div class="complaints-list">
-            <?php $reclamosMostrados = array_slice($reclamos, 0, 3); ?>
-            <?php foreach ($reclamosMostrados as $reclamo): ?>
-                <div class="complaint-card">
-                    <div class="complaint-id"><?= esc($reclamo['id']) ?></div>
-                    <div class="complaint-date"><?= esc(date('d/m/Y', strtotime($reclamo['fecha']))) ?></div>
-                    <h3 class="complaint-title"><?= esc(substr($reclamo['descripcion'], 0, 60)) ?></h3>
-                    <div class="complaint-status <?= esc($reclamo['estado']) ?>">
-                        <?= esc(ucfirst($reclamo['estado'])) ?>
-                    </div>
-                    <a href="<?= site_url('ciudadano/ver-respuesta/' . $reclamo['id']) ?>" class="complaint-action">
-                        <i class="bi bi-eye"></i> Ver detalles
-                    </a>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
 </div>
-
-<!-- Acciones rápidas -->
-<div class="container my-5">
-    <div class="dashboard-section">
-        <h2 class="section-title">
-            <i class="bi bi-lightning-charge"></i> Acciones rápidas
-        </h2>
-        <div class="quick-actions">
-            <a href="<?= site_url('ciudadano/tramites') ?>" class="action-card">
-                <div class="action-icon info">
-                    <i class="bi bi-file-earmark-text"></i>
-                </div>
-                <h3>Consultar trámites</h3>
-                <p>Revisa los trámites disponibles y sus requisitos</p>
-                <span class="action-link">Ver trámites <i class="bi bi-arrow-right"></i></span>
-            </a>
-
-            <a href="<?= site_url('ciudadano/preguntas_frecuentes') ?>" class="action-card">
-                <div class="action-icon primary">
-                    <i class="bi bi-question-circle"></i>
-                </div>
-                <h3>Preguntas frecuentes</h3>
-                <p>Encuentra respuestas a las dudas más comunes</p>
-                <span class="action-link">Ver ayuda <i class="bi bi-arrow-right"></i></span>
-            </a>
-
-            <a href="<?= site_url('ciudadano/perfil') ?>" class="action-card">
-                <div class="action-icon warning">
-                    <i class="bi bi-person"></i>
-                </div>
-                <h3>Mi perfil</h3>
-                <p>Actualiza tus datos personales y preferencias</p>
-                <span class="action-link">Editar perfil <i class="bi bi-arrow-right"></i></span>
-            </a>
-        </div>
-    </div>
 </div>
-
-<!-- Noticias y anuncios -->
-<div class="container my-5">
-    <div class="dashboard-section">
-        <h2 class="section-title">
-            <i class="bi bi-megaphone"></i> Noticias y anuncios
-        </h2>
-
-        <div class="news-grid">
-            <div class="news-card">
-                <div class="news-image" style="background-image: url('<?= base_url('assets/images/sistema-seguimiento.png') ?>');"></div>
-                <div class="news-content">
-                    <div class="news-meta">
-                        <span class="news-category">Novedad</span>
-                        <span class="news-date">Hoy</span>
-                    </div>
-                    <h3 class="news-title">Nuevo sistema de seguimiento</h3>
-                    <p class="news-excerpt">Implementamos mejoras en el sistema de seguimiento de reclamos...</p>
-                    <div class="news-footer">
-                        <a href="#" class="read-more">Leer más</a>
-                        <span class="reading-time">2 min</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="news-card">
-                <div class="news-image" style="background-image: url('<?= base_url('assets/images/horario-extendido.png') ?>');"></div>
-                <div class="news-content">
-                    <div class="news-meta">
-                        <span class="news-category">Aviso</span>
-                        <span class="news-date">Ayer</span>
-                    </div>
-                    <h3 class="news-title">Horario extendido de atención</h3>
-                    <p class="news-excerpt">Ampliaremos nuestro horario de atención al ciudadano...</p>
-                    <div class="news-footer">
-                        <a href="#" class="read-more">Leer más</a>
-                        <span class="reading-time">3 min</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center mt-4">
-            <a href="#" class="btn-outline">
-                <i class="bi bi-newspaper"></i> Ver todas las noticias
-            </a>
-        </div>
-    </div>
 </div>
+</main>
 
 <style>
+    :root {
+        --primary-color: #4361ee;
+        --primary-dark: #3a56d4;
+        --secondary-color: #3f37c9;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --success-color: #4cc9f0;
+        --warning-color: #f8961e;
+        --danger-color: #f72585;
+        --gray-color: #6c757d;
+        --light-gray: #e9ecef;
+    }
+
     /* Estilos generales */
-    .dashboard-section {
-        background: white;
-        border-radius: 12px;
-        padding: 24px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        margin-bottom: 24px;
+    body {
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        line-height: 1.6;
+        color: #333;
     }
-    
-    .section-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+
+    .container {
+        max-width: 1200px;
+        padding: 0 20px;
     }
+
+    /* Sección de bienvenida */
+    /* Sección de bienvenida */
     .welcome-section {
-    background: #0d6efd;       /* color base */
-    background-image: none;    /* por si había algo heredado */
-}
-
-
-
-    
-    /* Estadísticas */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 16px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white;
+        padding: 30px 0;
+        position: relative;
+        overflow: hidden;
     }
-    
-    .stat-card {
-        padding: 20px;
+
+    .welcome-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('<?= base_url('assets/images/pattern.png') ?>') repeat;
+        opacity: 0.1;
+        z-index: 0;
+    }
+
+    .welcome-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .welcome-subtitle {
+        font-size: 1.25rem;
+        margin-bottom: 30px;
+        opacity: 0.9;
+        position: relative;
+    }
+
+    .welcome-actions {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        position: relative;
+    }
+
+    .welcome-image {
+        max-width: 80%;
+        height: auto;
         border-radius: 10px;
-        text-align: center;
+        box-shadow: 0 10px 10px rgba(0,0,0,0.2);
         transition: transform 0.3s ease;
     }
-    
-    .stat-card:hover {
+
+    .welcome-image:hover {
         transform: translateY(-5px);
     }
-    
-    .stat-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 12px;
-        font-size: 1.5rem;
+
+    /* Contenedor principal */
+    .dashboard-container {
+        padding: 40px 0;
+        background-color: var(--light-color);
     }
-    
-    .stat-value {
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 4px;
+
+    .dashboard-section {
+        margin-bottom: 40px;
     }
-    
-    .stat-label {
-        color: #6c757d;
-        margin-bottom: 8px;
+
+    /* Contenedor principal */
+    .dashboard-container {
+        padding: 40px 0;
+        background-color: var(--light-color);
     }
-    
-    .stat-badge {
-        display: inline-block;
-        padding: 4px 8px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 500;
+
+    .dashboard-section {
+        margin-bottom: 40px;
     }
-    
-    /* Colores para estadísticas */
-    .pending {
-        background-color: #fff5f5;
-        border-left: 4px solid #dc3545;
-    }
-    .pending .stat-icon {
-        background-color: rgba(220, 53, 69, 0.1);
-        color: #dc3545;
-    }
-    .pending .stat-badge {
-        background-color: rgba(220, 53, 69, 0.1);
-        color: #dc3545;
-    }
-    
-    .in-progress {
-        background-color: #fff9e6;
-        border-left: 4px solid #fd7e14;
-    }
-    .in-progress .stat-icon {
-        background-color: rgba(253, 126, 20, 0.1);
-        color: #fd7e14;
-    }
-    .in-progress .stat-badge {
-        background-color: rgba(253, 126, 20, 0.1);
-        color: #fd7e14;
-    }
-    
-    .resolved {
-        background-color: #f0fff4;
-        border-left: 4px solid #28a745;
-    }
-    .resolved .stat-icon {
-        background-color: rgba(40, 167, 69, 0.1);
-        color: #28a745;
-    }
-    .resolved .stat-badge {
-        background-color: rgba(40, 167, 69, 0.1);
-        color: #28a745;
-    }
-    
-    /* Acciones rápidas */
-    .quick-actions {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-    }
-    
-    .action-card {
-        display: block;
-        padding: 20px;
-        border-radius: 10px;
-        background: white;
-        border: 1px solid #e9ecef;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        color: inherit;
-    }
-    
-    .action-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        border-color: transparent;
-    }
-    
-    .action-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 16px;
-        font-size: 1.5rem;
-    }
-    
-    .action-card h3 {
-        font-size: 1.1rem;
-        margin-bottom: 8px;
-        color: #2c3e50;
-    }
-    
-    .action-card p {
-        color: #6c757d;
-        margin-bottom: 16px;
-        font-size: 0.9rem;
-    }
-    
-    .action-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
-    
-    .action-card:hover .action-link {
-        transform: translateX(3px);
-    }
-    
-    /* Colores para acciones */
-    .info {
-        background-color: rgba(23, 162, 184, 0.1);
-        color: #17a2b8;
-    }
-    .primary {
-        background-color: rgba(13, 110, 253, 0.1);
-        color: #0d6efd;
-    }
-    .warning {
-        background-color: rgba(255, 193, 7, 0.1);
-        color: #ffc107;
-    }
-    
-    /* Reclamos recientes */
+
+    /* Encabezados de sección */
     .section-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 16px;
+        margin-bottom: 25px;
     }
-    
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
     .view-all {
         display: flex;
         align-items: center;
-        gap: 4px;
-        font-size: 0.9rem;
-        color: #6c757d;
+        gap: 5px;
+        color: var(--gray-color);
         text-decoration: none;
-        transition: all 0.2s ease;
-    }
-    
-    .view-all:hover {
-        color: #0d6efd;
-    }
-    
-    .complaints-list {
-        display: grid;
-        gap: 12px;
-    }
-    
-    .complaint-card {
-        display: grid;
-        grid-template-columns: 120px 100px 1fr auto auto;
-        align-items: center;
-        gap: 16px;
-        padding: 16px;
-        background: white;
-        border: 1px solid #e9ecef;
-        border-radius: 8px;
+        font-size: 0.9rem;
         transition: all 0.3s ease;
     }
-    
-    @media (max-width: 992px) {
-        .complaint-card {
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto auto auto;
-        }
+
+    .view-all:hover {
+        color: var(--primary-color);
+    }
+
+    /* Estadísticas */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .stat-card {
+        padding: 25px;
+        border-radius: 12px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background-color: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        font-size: 1.5rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        color: var(--gray-color);
+    }
+
+    /* Colores para estadísticas */
+    .pending {
+        border-left: 4px solid var(--danger-color);
+    }
+    .pending .stat-icon {
+        background-color: rgba(247, 37, 133, 0.1);
+        color: var(--danger-color);
     }
     
-    .complaint-card:hover {
-        transform: translateY(-2px);
+    .in-progress {
+        border-left: 4px solid var(--warning-color);
+    }
+    .in-progress .stat-icon {
+        background-color: rgba(248, 150, 30, 0.1);
+        color: var(--warning-color);
+    }
+    
+    .resolved {
+        border-left: 4px solid var(--success-color);
+    }
+    .resolved .stat-icon {
+        background-color: rgba(76, 201, 240, 0.1);
+        color: var(--success-color);
+    }
+
+    /* Lista de reclamos */
+    .complaints-list {
+        display: grid;
+        gap: 15px;
+    }
+
+    .complaint-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
     }
-    
+
+    .complaint-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .complaint-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
     .complaint-id {
         font-weight: 600;
-        color: #2c3e50;
+        color: var(--primary-color);
     }
-    
+
     .complaint-date {
-        color: #6c757d;
+        color: var(--gray-color);
         font-size: 0.9rem;
     }
-    
+
     .complaint-title {
-        font-size: 1rem;
-        margin: 0;
-        color: #495057;
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+        color: var(--dark-color);
     }
-    
+
+    .complaint-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
     .complaint-status {
-        padding: 4px 12px;
+        padding: 5px 15px;
         border-radius: 20px;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         font-weight: 500;
-        text-align: center;
     }
-    
+
     .complaint-action {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 6px 12px;
+        gap: 5px;
+        padding: 5px 15px;
         border-radius: 20px;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         text-decoration: none;
-        transition: all 0.2s ease;
-        background-color: rgba(13, 110, 253, 0.1);
-        color: #0d6efd;
+        background-color: rgba(67, 97, 238, 0.1);
+        color: var(--primary-color);
+        transition: all 0.3s ease;
     }
-    
+
     .complaint-action:hover {
-        background-color: rgba(13, 110, 253, 0.2);
+        background-color: rgba(67, 97, 238, 0.2);
     }
-    
-    /* Estados de reclamos */
-    .pending {
-        background-color: rgba(220, 53, 69, 0.1);
-        color: #dc3545;
-    }
-    .in-progress {
-        background-color: rgba(253, 126, 20, 0.1);
-        color: #fd7e14;
-    }
-    .resolved {
-        background-color: rgba(40, 167, 69, 0.1);
-        color: #28a745;
-    }
-    
-    /* Noticias */
-    .news-grid {
+    /* Colores por estado */
+.complaint-status.pendiente {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.complaint-status.en-proceso {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.complaint-status.resuelto {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.complaint-status.rechazado {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Opcional: animación suave */
+.complaint-status {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.complaint-status.solucionado {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+.complaint-status.en-proceso {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+
+
+    /* Acciones rápidas */
+    .quick-actions-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 20px;
     }
-    
-    .news-card {
-    display: flex;
-    flex-direction: row;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    background-color: #fff;
-}
-    
-    .news-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
-    
-    .news-image {
-    width: 120px;
-    height: 120px;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    flex-shrink: 0;
-    margin: 15px;
-    border-radius: 10px;
-    background-color: #f8f9fa;
-}
-    
-    .news-content {
-    padding: 1rem;
-    flex-grow: 1;
-}
-    
-    .news-meta {
-    font-size: 0.85rem;
-    color: #6c757d;
-    margin-bottom: 0.5rem;
-}
-    
-    .news-category {
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
-    
-    .news-date {
-        color: #6c757d;
-        font-size: 0.75rem;
-    }
-    
-    .news-title {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-    
-    .news-excerpt {
-    font-size: 0.9rem;
-    color: #6c757d;
-}
-    
-    .news-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.8rem;
-    margin-top: 1rem;
-}
-    
-    .read-more {
-        font-size: 0.9rem;
-        color: #0d6efd;
+
+    .quick-action-card {
+        background-color: white;
+        border-radius: 12px;
+        padding: 25px;
+        display: flex;
+        gap: 20px;
+        align-items: center;
         text-decoration: none;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border: 1px solid var(--light-gray);
     }
-    
-    .read-more:hover {
-        text-decoration: underline;
+
+    .quick-action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        border-color: rgba(67, 97, 238, 0.2);
     }
-    
-    .reading-time {
-        color: #adb5bd;
-        font-size: 0.75rem;
+
+    .action-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        flex-shrink: 0;
     }
-    
-    .btn-outline {
+
+    .quick-action-card:nth-child(1) .action-icon {
+        background-color: var(--primary-color);
+    }
+
+    .quick-action-card:nth-child(2) .action-icon {
+        background-color: #10b981;
+    }
+
+    .quick-action-card:nth-child(3) .action-icon {
+        background-color: #f59e0b;
+    }
+
+    .action-content h3 {
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+        color: var(--dark-color);
+    }
+
+    .action-content p {
+        font-size: 0.9rem;
+        color: var(--gray-color);
+        margin-bottom: 10px;
+    }
+
+    .action-link {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 8px 16px;
-        border-radius: 6px;
-        border: 1px solid #dee2e6;
-        background: transparent;
-        color: #495057;
-        text-decoration: none;
-        transition: all 0.2s ease;
+        gap: 5px;
+        font-size: 0.9rem;
+        color: var(--primary-color);
+        transition: all 0.3s ease;
     }
-    
-    .btn-outline:hover {
-        border-color: #0d6efd;
-        color: #0d6efd;
+
+    .quick-action-card:hover .action-link {
+        transform: translateX(5px);
     }
+
+    /* Entidades accesibles */
+    /*Entidades accesibles */
+     .logos-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* Fuerza 5 columnas */
+  gap: 2rem;
+  justify-items: center;
+  align-items: center;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+.logo-item img {
+  max-width: 100px;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+.logo-item:hover img {
+  transform: scale(1.1);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
 </style>
 
 <?= $this->endSection() ?>

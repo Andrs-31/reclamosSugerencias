@@ -11,29 +11,6 @@
                         Preguntas Frecuentes
                     </h1>
                 </div>
-                <div class="card-body">
-                    <!-- Sección de búsqueda -->
-                    <div class="mb-4">
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-0">
-                                <i class="bi bi-search"></i>
-                            </span>
-                            <input type="text" class="form-control border-0 bg-light" placeholder="Buscar en preguntas frecuentes...">
-                            <button class="btn btn-primary px-4">Buscar</button>
-                        </div>
-                    </div>
-
-                    <!-- Categorías -->
-                    <div class="mb-4">
-                        <h2 class="h5 mb-3">Categorías</h2>
-                        <div class="d-flex flex-wrap gap-2">
-                            <a href="#" class="btn btn-sm btn-outline-secondary active">Todas</a>
-                            <a href="#" class="btn btn-sm btn-outline-secondary">Registro</a>
-                            <a href="#" class="btn btn-sm btn-outline-secondary">Seguimiento</a>
-                            <a href="#" class="btn btn-sm btn-outline-secondary">Documentación</a>
-                            <a href="#" class="btn btn-sm btn-outline-secondary">Plazos</a>
-                        </div>
-                    </div>
 
                     <!-- Listado de preguntas -->
                     <div class="accordion" id="faqAccordion">
@@ -158,7 +135,7 @@
                             <i class="bi bi-info-circle-fill text-primary fs-4 me-3"></i>
                             <div>
                                 <h3 class="h6 mb-1">¿No encontró lo que buscaba?</h3>
-                                <p class="mb-0">Contáctenos directamente a través de nuestro <a href="<?= site_url('contacto') ?>" class="text-primary">formulario de contacto</a> o al teléfono 800-RECLAMO.</p>
+                                <p class="mb-0">Contáctenos directamente a través de nuestro teléfono 6931-6518.</p>
                             </div>
                         </div>
                     </div>

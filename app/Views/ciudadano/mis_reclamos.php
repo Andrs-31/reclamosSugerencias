@@ -31,7 +31,7 @@
     <?php endif; ?>
 
     <!-- Tarjeta contenedora -->
-    <div class="card border-0 shadow-sm">
+<div class="card border-0 shadow-sm mb-5 pb-4">
     <div class="card-body p-0">
         <?php if (empty($reclamos)): ?>
             <div class="text-center py-5">
@@ -116,10 +116,7 @@
                                 <td class="pe-4 text-end">
                                     <div class="btn-group btn-group-sm shadow-sm">
                                         <?php if (empty($reclamo['tiene_respuesta'])): ?>
-                                            <!-- Editar activo -->
-                                            <a href="<?= site_url('ciudadano/editar-reclamo/' . $reclamo['id']) ?>" class="btn btn-outline-info" title="Editar">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
+        
                                             <!-- Eliminar activo -->
                                             <button class="btn btn-outline-danger" onclick="confirmarEliminacion(<?= $reclamo['id'] ?>)" title="Eliminar">
                                                 <i class="bi bi-trash"></i>

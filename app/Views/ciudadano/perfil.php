@@ -40,7 +40,6 @@
                     <div class="card border-0 shadow-sm">
                         <div class="card-body">
                             <div class="text-center mb-4">
-                                <img src="<?= base_url('assets/images/avatar-user.png') ?>" alt="Avatar" class="rounded-circle mb-3" width="120" height="120">
                                 <h5 class="mb-1"><?= esc($usuario['nombre'] ?? 'Usuario') ?></h5>
                                 <p class="text-muted small"><?= esc($usuario['email'] ?? 'correo@ejemplo.com') ?></p>
                             </div>
@@ -54,16 +53,6 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="#seguridad" data-bs-toggle="tab">
                                         <i class="bi bi-shield-lock me-2"></i> Seguridad
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#notificaciones" data-bs-toggle="tab">
-                                        <i class="bi bi-bell me-2"></i> Notificaciones
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#preferencias" data-bs-toggle="tab">
-                                        <i class="bi bi-gear me-2"></i> Preferencias
                                     </a>
                                 </li>
                             </ul>
@@ -93,29 +82,12 @@
                                                 <input type="text" class="form-control" id="nombre" name="nombre" 
                                                        value="<?= esc($usuario['nombre'] ?? '') ?>" required>
                                             </div>
-                                            <div class="col-md-6">
-                                                <label for="apellido" class="form-label">Apellido</label>
-                                                <input type="text" class="form-control" id="apellido" name="apellido" 
-                                                       value="<?= esc($usuario['apellido'] ?? '') ?>" required>
-                                            </div>
                                         </div>
-                                        
+
                                         <div class="mb-3">
                                             <label for="email" class="form-label">Correo electrónico</label>
                                             <input type="email" class="form-control" id="email" name="email" 
                                                    value="<?= esc($usuario['email'] ?? '') ?>" required>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label for="telefono" class="form-label">Teléfono</label>
-                                            <input type="tel" class="form-control" id="telefono" name="telefono" 
-                                                   value="<?= esc($usuario['telefono'] ?? '') ?>">
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label for="direccion" class="form-label">Dirección</label>
-                                            <textarea class="form-control" id="direccion" name="direccion" 
-                                                      rows="2"><?= esc($usuario['direccion'] ?? '') ?></textarea>
                                         </div>
                                         
                                         <div class="text-end">
@@ -165,104 +137,7 @@
                                     </form>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Pestaña Notificaciones -->
-                        <div class="tab-pane fade" id="notificaciones">
-                            <div class="card border-0 shadow-sm">
-                                <div class="card-header bg-white border-bottom-0 py-3">
-                                    <h2 class="h5 mb-0">
-                                        <i class="bi bi-bell text-primary me-2"></i>
-                                        Preferencias de Notificación
-                                    </h2>
-                                </div>
-                                <div class="card-body">
-                                    <form action="<?= site_url('ciudadano/actualizar-notificaciones') ?>" method="post">
-                                        <?= csrf_field() ?>
-                                        
-                                        <div class="mb-3">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="notificaciones_email" name="notificaciones_email" 
-                                                       <?= ($usuario['notificaciones_email'] ?? 1) ? 'checked' : '' ?>>
-                                                <label class="form-check-label" for="notificaciones_email">Recibir notificaciones por correo</label>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="notificaciones_sms" name="notificaciones_sms" 
-                                                       <?= ($usuario['notificaciones_sms'] ?? 0) ? 'checked' : '' ?>>
-                                                <label class="form-check-label" for="notificaciones_sms">Recibir notificaciones por SMS</label>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="mb-4">
-                                            <label class="form-label">Frecuencia de notificaciones</label>
-                                            <select class="form-select" name="frecuencia_notificaciones">
-                                                <option value="inmediato" <?= ($usuario['frecuencia_notificaciones'] ?? '') == 'inmediato' ? 'selected' : '' ?>>Inmediato</option>
-                                                <option value="diario" <?= ($usuario['frecuencia_notificaciones'] ?? '') == 'diario' ? 'selected' : '' ?>>Resumen diario</option>
-                                                <option value="semanal" <?= ($usuario['frecuencia_notificaciones'] ?? '') == 'semanal' ? 'selected' : '' ?>>Resumen semanal</option>
-                                            </select>
-                                        </div>
-                                        
-                                        <div class="text-end">
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="bi bi-save me-1"></i> Guardar preferencias
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Pestaña Preferencias -->
-                        <div class="tab-pane fade" id="preferencias">
-                            <div class="card border-0 shadow-sm">
-                                <div class="card-header bg-white border-bottom-0 py-3">
-                                    <h2 class="h5 mb-0">
-                                        <i class="bi bi-gear text-primary me-2"></i>
-                                        Configuración del Sistema
-                                    </h2>
-                                </div>
-                                <div class="card-body">
-                                    <form action="<?= site_url('ciudadano/actualizar-preferencias') ?>" method="post">
-                                        <?= csrf_field() ?>
-                                        
-                                        <div class="mb-3">
-                                            <label class="form-label">Idioma preferido</label>
-                                            <select class="form-select" name="idioma">
-                                                <option value="es" <?= ($usuario['idioma'] ?? '') == 'es' ? 'selected' : '' ?>>Español</option>
-                                                <option value="en" <?= ($usuario['idioma'] ?? '') == 'en' ? 'selected' : '' ?>>Inglés</option>
-                                            </select>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label class="form-label">Tema de interfaz</label>
-                                            <select class="form-select" name="tema">
-                                                <option value="claro" <?= ($usuario['tema'] ?? '') == 'claro' ? 'selected' : '' ?>>Claro</option>
-                                                <option value="oscuro" <?= ($usuario['tema'] ?? '') == 'oscuro' ? 'selected' : '' ?>>Oscuro</option>
-                                                <option value="sistema" <?= ($usuario['tema'] ?? '') == 'sistema' ? 'selected' : '' ?>>Usar configuración del sistema</option>
-                                            </select>
-                                        </div>
-                                        
-                                        <div class="mb-4">
-                                            <label class="form-label">Zona horaria</label>
-                                            <select class="form-select" name="zona_horaria">
-                                                <option value="America/Panama" <?= ($usuario['zona_horaria'] ?? '') == 'America/Panama' ? 'selected' : '' ?>>Panamá (UTC-5)</option>
-                                                <option value="America/Mexico_City" <?= ($usuario['zona_horaria'] ?? '') == 'America/Mexico_City' ? 'selected' : '' ?>>Ciudad de México (UTC-6)</option>
-                                                <option value="America/Bogota" <?= ($usuario['zona_horaria'] ?? '') == 'America/Bogota' ? 'selected' : '' ?>>Bogotá (UTC-5)</option>
-                                            </select>
-                                        </div>
-                                        
-                                        <div class="text-end">
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="bi bi-save me-1"></i> Guardar configuración
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                        </div> <!-- fin pestaña seguridad -->
                     </div>
                 </div>
             </div>
@@ -343,5 +218,7 @@
     }
 </style>
 
+<!-- Bootstrap JS para que las pestañas funcionen -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <?= $this->endSection() ?>

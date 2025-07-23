@@ -4,7 +4,6 @@
 <?= $this->extend('layouts/template_login'); ?>
 <!-- Definimos la sección de contenido -->
 <?= $this->section('content'); ?>
-
 <div class="container py-5">
   <div class="card shadow-lg border-0 mx-auto" style="max-width: 900px;">
     <div class="row g-0">
@@ -98,6 +97,7 @@
       </div>
     </div>
   </div>
+</div>
 </div>
 
 

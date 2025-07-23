@@ -22,10 +22,11 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-secondary shadow-sm">
     <div class="container-fluid">
         <!-- Logo y marca con efecto hover -->
-        <a class="navbar-brand" href="/">
-            <img src="<?= base_url('assets/images/logo.png') ?>" alt="Logo Reclamos.PA" height="40" class="me-2 logo-img">
-            <span class="fw-bold"></span>
-        </a>
+        <span class="navbar-brand">
+    <img src="<?= base_url('assets/images/logo.png') ?>" alt="Logo Reclamos.PA" height="40" class="me-2 logo-img">
+    <span class="fw-bold"></span>
+</span>
+
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
             <span class="navbar-toggler-icon"></span>
@@ -71,6 +72,13 @@
                         <li><a class="dropdown-item" href="<?= base_url('ciudadano/preguntas_frecuentes') ?>">
                             <i class="bi bi-question-circle me-2"></i> Ayuda
                         </a></li>
+                        <li>
+            <a class="dropdown-item" href="http://localhost/webConsumo/Reclamos_api.html" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-bar-chart-fill me-2"></i> Reportes Públicos
+            </a>
+        </li>
+    </ul>
+</li>
                     </ul>
                 </li>
             </ul>
@@ -85,9 +93,10 @@
                         <li><a class="dropdown-item" href="<?= site_url('ciudadano/perfil') ?>"
 >
                             <i class="bi bi-person me-2"></i> Mi Perfil
-                        <li><a class="dropdown-item text-danger" href="/logout">
-                            <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
-                        </a></li>
+                        <li><a class="dropdown-item text-danger" href="<?= site_url('logout') ?>">
+    <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
+</a></li>
+
                     </ul>
                 </li>
             </ul>
@@ -208,13 +217,13 @@
                     <a href="https://wa.me/50769316518" class="text-white me-3" target="_blank" aria-label="WhatsApp">
                         <i class="bi bi-whatsapp fs-4"></i>
                     </a>
-                    <a href="https://facebook.com/PlataformaReclamosPA" class="text-white me-3" target="_blank" aria-label="Facebook">
+                    <a href="https://facebook.com" class="text-white me-3" target="_blank" aria-label="Facebook">
                         <i class="bi bi-facebook fs-4"></i>
                     </a>
-                    <a href="https://instagram.com/PlataformaReclamosPA" class="text-white me-3" target="_blank" aria-label="Instagram">
+                    <a href="https://instagram.com" class="text-white me-3" target="_blank" aria-label="Instagram">
                         <i class="bi bi-instagram fs-4"></i>
                     </a>
-                    <a href="https://twitter.com/ReclamosPA" class="text-white" target="_blank" aria-label="Twitter">
+                    <a href="https://twitter.com" class="text-white" target="_blank" aria-label="Twitter">
                         <i class="bi bi-twitter fs-4"></i>
                     </a>
                 </div>
@@ -234,11 +243,6 @@
                         <a href="<?= site_url('ciudadano/preguntas_frecuentes') ?>"
  class="text-white text-decoration-none d-flex align-items-center py-1">
                             <i class="bi bi-question-circle me-2"></i> Preguntas frecuentes
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="/noticias" class="text-white text-decoration-none d-flex align-items-center py-1">
-                            <i class="bi bi-newspaper me-2"></i> Noticias
                         </a>
                     </li>
                     <li>
@@ -296,6 +300,7 @@
                 </div>
             </div>
         </div>
+
         
         <hr class="my-4 border-light opacity-25">
         

@@ -65,10 +65,10 @@
                         <span class="icon"><i class="fas fa-edit"></i></span>
                         <span>Editar</span>
                       </button>
-                      <a href="<?= base_url('categorias/delete/' . $categoria['id']) ?>" class="button is-small is-danger is-light" title="Eliminar" onclick="return confirm('¿Está seguro de eliminar esta categoría?');">
+                      <!-- <a href="<?= base_url('categorias/delete/' . $categoria['id']) ?>" class="button is-small is-danger is-light" title="Eliminar" onclick="return confirm('¿Está seguro de eliminar esta categoría?');">
                         <span class="icon"><i class="fas fa-trash"></i></span>
                         <span>Eliminar</span>
-                      </a>
+                      </a> -->
                     </div>
                   </td>
                 </tr>

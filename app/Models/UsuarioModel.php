@@ -23,7 +23,7 @@ class UsuarioModel extends Model
 
     // Dates
     protected $useTimestamps = false;
-    protected $dateFormat    = '';
+    protected $dateFormat    = 'datetime';
     protected $createdField  = '';
     protected $updatedField  = '';
     protected $deletedField  = '';

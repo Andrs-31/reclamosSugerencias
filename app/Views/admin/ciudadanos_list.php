@@ -53,10 +53,10 @@
                   <td>
                     <div class="buttons is-small">
                        <!-- Botón para editar -->
-                      <button class="button is-small is-light" title="Editar" onclick="openCitizenModal(<?= $ciudadano['id'] ?>, '<?= esc($ciudadano['nombre'], 'js') ?>', '<?= esc($ciudadano['email'], 'js') ?>')">
+                      <!-- <button class="button is-small is-light" title="Editar" onclick="openCitizenModal(<?= $ciudadano['id'] ?>, '<?= esc($ciudadano['nombre'], 'js') ?>', '<?= esc($ciudadano['email'], 'js') ?>')">
                         <span class="icon"><i class="fas fa-edit"></i></span>
                         <span>Editar</span>
-                      </button>
+                      </button> -->
 
                       <!-- Botón para ver reclamos -->
                       <a href="<?= base_url('reclamos/usuario_id/' . $ciudadano['id']) ?>" class="button is-small is-link" title="Ver Reclamos">

@@ -495,7 +495,7 @@ public function cambiarPassword()
     // Validaciones
     $validationRules = [
         'password_actual' => 'required',
-        'nuevo_password' => 'required|min_length[8]|strong_password',
+        'nuevo_password' => 'required|min_length[8]',
         'confirmar_password' => 'required|matches[nuevo_password]',
     ];
     
